@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import Header from './components/layout/Header';
 import EventList from './components/events/EventList';
 import EventDetails from './components/events/EventDetails';
+import MyEventDetails from './components/events/MyEventDetails';
 import CreateEventForm from './components/events/CreateEventForm';
 import VendorList from './components/vendors/VendorList';
+import VendorDetails from './components/vendors/VendorDetails';
+import VendorRegistration from './components/vendors/VendorRegistration';
 import Dashboard from './components/dashboard/Dashboard';
 import LoginForm from './components/auth/LoginForm';
 import RegisterForm from './components/auth/RegisterForm';
@@ -13,7 +16,7 @@ import BookingSuccess from './components/booking/BookingSuccess';
 import UserProfile from './components/profile/UserProfile';
 import { Event, Vendor } from './types';
 
-type ViewType = 'events' | 'event-details' | 'create-event' | 'vendors' | 'dashboard' | 'profile' | 'login' | 'register' | 'forgot-password' | 'booking' | 'booking-success';
+type ViewType = 'events' | 'event-details' | 'my-event-details' | 'create-event' | 'vendors' | 'vendor-details' | 'vendor-registration' | 'dashboard' | 'profile' | 'login' | 'register' | 'forgot-password' | 'booking' | 'booking-success';
 type AuthPage = 'login' | 'register' | 'forgot-password';
 
 function App() {
@@ -35,7 +38,7 @@ function App() {
   };
 
   const handleViewChange = (view: string) => {
-    if ((view === 'dashboard' || view === 'profile' || view === 'create-event') && !isAuthenticated) {
+    if ((view === 'dashboard' || view === 'profile' || view === 'create-event' || view === 'vendor-registration') && !isAuthenticated) {
       setAuthPage('login');
       setCurrentView('login');
     } else {
@@ -48,9 +51,19 @@ function App() {
     setCurrentView('event-details');
   };
 
+  const handleMyEventSelect = (event: Event) => {
+    setSelectedEvent(event);
+    setCurrentView('my-event-details');
+  };
+
   const handleVendorSelect = (vendor: Vendor) => {
     setSelectedVendor(vendor);
-    console.log('Selected vendor:', vendor);
+    setCurrentView('vendor-details');
+  };
+
+  const handleContactVendor = (vendor: Vendor) => {
+    console.log('Contact vendor:', vendor);
+    // Here you would typically open a contact form or messaging system
   };
 
   const handleBookTicket = (event: Event) => {
@@ -71,6 +84,22 @@ function App() {
   const handleEventCreated = () => {
     setCurrentView('dashboard');
     // Here you would typically refresh the events list
+  };
+
+  const handleVendorCreated = () => {
+    setCurrentView('dashboard');
+    // Here you would typically refresh the vendor list
+  };
+
+  const handleEditEvent = (event: Event) => {
+    setSelectedEvent(event);
+    setCurrentView('create-event');
+  };
+
+  const handleDeleteEvent = (eventId: string) => {
+    console.log('Delete event:', eventId);
+    // Here you would typically delete the event and refresh the list
+    setCurrentView('dashboard');
   };
 
   const handleAuthNavigation = (page: AuthPage) => {
@@ -126,6 +155,16 @@ function App() {
     );
   }
 
+  // Vendor Registration
+  if (currentView === 'vendor-registration') {
+    return (
+      <VendorRegistration
+        onBack={() => setCurrentView('vendors')}
+        onVendorCreated={handleVendorCreated}
+      />
+    );
+  }
+
   // Main app layout
   return (
     <div className="min-h-screen bg-gray-50">
@@ -149,6 +188,15 @@ function App() {
           />
         )}
 
+        {currentView === 'my-event-details' && selectedEvent && (
+          <MyEventDetails
+            event={selectedEvent}
+            onBack={() => setCurrentView('dashboard')}
+            onEditEvent={handleEditEvent}
+            onDeleteEvent={handleDeleteEvent}
+          />
+        )}
+
         {currentView === 'create-event' && (
           <CreateEventForm
             onEventCreated={handleEventCreated}
@@ -159,9 +207,20 @@ function App() {
         {currentView === 'vendors' && (
           <VendorList onVendorSelect={handleVendorSelect} />
         )}
+
+        {currentView === 'vendor-details' && selectedVendor && (
+          <VendorDetails
+            vendor={selectedVendor}
+            onBack={() => setCurrentView('vendors')}
+            onContactVendor={handleContactVendor}
+          />
+        )}
         
         {currentView === 'dashboard' && isAuthenticated && (
-          <Dashboard onCreateEvent={() => setCurrentView('create-event')} />
+          <Dashboard 
+            onCreateEvent={() => setCurrentView('create-event')}
+            onEventSelect={handleMyEventSelect}
+          />
         )}
 
         {currentView === 'profile' && isAuthenticated && (
@@ -196,22 +255,22 @@ function App() {
             </div>
             
             <div>
+              <h3 className="font-semibold mb-4">For Vendors</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><button onClick={() => handleViewChange('vendor-registration')}>Join as Vendor</button></li>
+                <li><button onClick={() => handleViewChange('vendors')}>Browse Vendors</button></li>
+                <li>Vendor Dashboard</li>
+                <li>Portfolio Management</li>
+              </ul>
+            </div>
+            
+            <div>
               <h3 className="font-semibold mb-4">For Attendees</h3>
               <ul className="space-y-2 text-sm text-gray-400">
                 <li><button onClick={() => handleViewChange('events')}>Browse Events</button></li>
                 <li>Book Tickets</li>
                 <li>RSVP Events</li>
                 <li><button onClick={() => handleViewChange('profile')}>My Profile</button></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold mb-4">Support</h3>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>Help Center</li>
-                <li>Contact Us</li>
-                <li>Privacy Policy</li>
-                <li>Terms of Service</li>
               </ul>
             </div>
           </div>

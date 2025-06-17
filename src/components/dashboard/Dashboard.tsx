@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Calendar, Users, TrendingUp, Plus, Eye, Edit, Trash2, MapPin, Clock } from 'lucide-react';
+import { Calendar, Users, TrendingUp, Plus, Eye, Edit, Trash2, MapPin, Clock, Building2 } from 'lucide-react';
 import { mockEvents, mockUser } from '../../data/mockData';
 import { Event } from '../../types';
 
 interface DashboardProps {
   onCreateEvent: () => void;
+  onEventSelect: (event: Event) => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ onCreateEvent }) => {
+const Dashboard: React.FC<DashboardProps> = ({ onCreateEvent, onEventSelect }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'events' | 'rsvps'>('overview');
   const [userEvents] = useState<Event[]>(mockEvents);
 
@@ -131,9 +132,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onCreateEvent }) => {
                   </button>
                   <button className="flex items-center space-x-3 p-4 bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors">
                     <div className="bg-amber-500 p-2 rounded-lg">
-                      <Calendar className="w-4 h-4 text-white" />
+                      <Building2 className="w-4 h-4 text-white" />
                     </div>
-                    <span className="font-medium text-amber-700">Event Calendar</span>
+                    <span className="font-medium text-amber-700">Find Vendors</span>
                   </button>
                 </div>
               </div>
@@ -205,7 +206,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onCreateEvent }) => {
                       </div>
                       
                       <div className="flex items-center space-x-2">
-                        <button className="p-2 text-gray-500 hover:text-emerald-600 rounded-lg hover:bg-white">
+                        <button 
+                          onClick={() => onEventSelect(event)}
+                          className="p-2 text-gray-500 hover:text-emerald-600 rounded-lg hover:bg-white"
+                        >
                           <Eye className="w-4 h-4" />
                         </button>
                         <button className="p-2 text-gray-500 hover:text-blue-600 rounded-lg hover:bg-white">

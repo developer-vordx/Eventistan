@@ -10,6 +10,12 @@ export interface User {
   bio?: string;
   preferences?: string[];
   joinedDate: string;
+  isVerified?: boolean;
+  socialLinks?: {
+    facebook?: string;
+    instagram?: string;
+    website?: string;
+  };
 }
 
 export interface Event {
@@ -40,12 +46,32 @@ export interface Event {
   seatingArrangement?: 'open' | 'assigned' | 'tables';
   availableSeats?: number;
   bookedSeats?: number;
+  participants?: EventParticipant[];
+  status: 'draft' | 'published' | 'cancelled' | 'completed';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EventParticipant {
+  id: string;
+  userId: string;
+  eventId: string;
+  user: User;
+  status: 'going' | 'maybe' | 'not-going';
+  ticketType?: 'free' | 'paid';
+  ticketNumber?: string;
+  bookingId?: string;
+  joinedAt: string;
+  seats: number;
+  paymentStatus?: 'pending' | 'completed' | 'failed';
+  checkInStatus?: 'pending' | 'checked-in';
+  checkInTime?: string;
 }
 
 export interface Vendor {
   id: string;
   name: string;
-  category: 'catering' | 'venue' | 'photography' | 'decoration' | 'dj' | 'transport';
+  category: 'catering' | 'venue' | 'photography' | 'decoration' | 'dj' | 'transport' | 'planning' | 'security';
   description: string;
   city: string;
   rating: number;
@@ -56,8 +82,59 @@ export interface Vendor {
   contact: {
     phone: string;
     email: string;
+    address: string;
+    website?: string;
   };
   services: string[];
+  portfolio?: VendorPortfolioItem[];
+  businessHours?: {
+    [key: string]: { open: string; close: string; isOpen: boolean };
+  };
+  socialLinks?: {
+    facebook?: string;
+    instagram?: string;
+    website?: string;
+  };
+  isVerified: boolean;
+  joinedDate: string;
+  completedEvents: number;
+  responseTime: string;
+  cancellationPolicy?: string;
+  paymentMethods: string[];
+  minimumOrder?: number;
+  serviceAreas: string[];
+  specializations?: string[];
+  certifications?: string[];
+  teamSize?: number;
+  establishedYear?: number;
+}
+
+export interface VendorPortfolioItem {
+  id: string;
+  title: string;
+  description: string;
+  images: string[];
+  eventType: string;
+  completedDate: string;
+  clientTestimonial?: string;
+  budget?: string;
+}
+
+export interface VendorReview {
+  id: string;
+  vendorId: string;
+  userId: string;
+  user: User;
+  rating: number;
+  comment: string;
+  eventId?: string;
+  eventTitle?: string;
+  createdAt: string;
+  isVerified: boolean;
+  response?: {
+    message: string;
+    respondedAt: string;
+  };
 }
 
 export interface RSVP {
@@ -80,6 +157,11 @@ export interface Booking {
   bookingDate: string;
   ticketNumber: string;
   qrCode?: string;
+  contactInfo: {
+    name: string;
+    email: string;
+    phone: string;
+  };
 }
 
 export interface PaymentMethod {
@@ -89,4 +171,29 @@ export interface PaymentMethod {
   icon: string;
   description: string;
   isActive: boolean;
+}
+
+export interface VendorInquiry {
+  id: string;
+  vendorId: string;
+  userId: string;
+  eventId?: string;
+  message: string;
+  contactInfo: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  eventDetails?: {
+    date: string;
+    venue: string;
+    guestCount: number;
+    budget: string;
+  };
+  status: 'pending' | 'responded' | 'closed';
+  createdAt: string;
+  response?: {
+    message: string;
+    respondedAt: string;
+  };
 }
